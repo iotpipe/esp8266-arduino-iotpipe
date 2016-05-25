@@ -40,10 +40,10 @@ bool IotPipe_GPIO::isValidGPIO(int portNum)
 }
 
 //GPIOs of the same type cannot have the same name
-bool IotPipe_GPIO::isPortNameValid(char *portName, int type)
+bool IotPipe_GPIO::isPortNameValid(String portName, int type)
 {
 	//if portname is empty then user is asking for one to be auto-assigned.
-	if( strcmp(portName,"")==0)
+	if( portName.equals("")==0)
 		return true;
 
 
@@ -53,7 +53,7 @@ bool IotPipe_GPIO::isPortNameValid(char *portName, int type)
     {
       continue;
     }
-    if ( strcmp(gpios[i].portName, portName) == 0 & gpios[i].gpio_type == type )
+    if ( gpios[i].portName.equals(portName) & gpios[i].gpio_type == type )
     {
       return false;
     }      
@@ -62,7 +62,7 @@ bool IotPipe_GPIO::isPortNameValid(char *portName, int type)
 }
 
 
-bool IotPipe_GPIO::setPortAsDigitalInput(int portNum, char *portName)
+bool IotPipe_GPIO::setPortAsDigitalInput(int portNum, String portName)
 {
 	
 	if( !isValidGPIO(portNum) )
@@ -73,7 +73,7 @@ bool IotPipe_GPIO::setPortAsDigitalInput(int portNum, char *portName)
 	
 	if ( !isPortNameValid(portName,DIGITAL_INPUT) )	
 	{
-		LOG_DEBUG_ARGS("Failed to set GPIO%d as input.  Portname of (%s) is already assigned to a port of type %d", portNum, portName, DIGITAL_INPUT);
+		LOG_DEBUG_ARGS("Failed to set GPIO%d as input.  Portname of (%s) is already assigned to a port of type %d", portNum, portName.c_str(), DIGITAL_INPUT);
 		return false;
 	}	
 	
@@ -85,12 +85,12 @@ bool IotPipe_GPIO::setPortAsDigitalInput(int portNum, char *portName)
 	return true;
 }
 
-bool IotPipe_GPIO::setPortAsAnalogInput(char *portName)
+bool IotPipe_GPIO::setPortAsAnalogInput(String portName)
 {
 	
 	if ( !isPortNameValid(portName,ANALOG_INPUT) )	
 	{
-		LOG_DEBUG_ARGS("Failed to set ADC as input.  Portname of (%s) is already assigned to a port of type %d",  portName, DIGITAL_INPUT);
+		LOG_DEBUG_ARGS("Failed to set ADC as input.  Portname of (%s) is already assigned to a port of type %d",  portName.c_str(), DIGITAL_INPUT);
 		return false;
 	}	
 	
@@ -100,7 +100,7 @@ bool IotPipe_GPIO::setPortAsAnalogInput(char *portName)
 	return true;
 }
 
-bool IotPipe_GPIO::setPortAsDigitalOutput(int portNum, char *portName)
+bool IotPipe_GPIO::setPortAsDigitalOutput(int portNum, String portName)
 {
 	if( !isValidGPIO(portNum) )
 	{
@@ -110,7 +110,7 @@ bool IotPipe_GPIO::setPortAsDigitalOutput(int portNum, char *portName)
 
 	if ( !isPortNameValid(portName, DIGITAL_OUTPUT) )	
 	{
-		LOG_DEBUG_ARGS("%s is already assigned to a port of type %d", portName, DIGITAL_OUTPUT);
+		LOG_DEBUG_ARGS("%s is already assigned to a port of type %d", portName.c_str(), DIGITAL_OUTPUT);
 		return false;
 	}
 
@@ -124,41 +124,23 @@ bool IotPipe_GPIO::setPortAsDigitalOutput(int portNum, char *portName)
 
 }
 
-void IotPipe_GPIO::addNode(int portNumber, char *portName, int type)
+void IotPipe_GPIO::addNode(int portNumber, String portName, int type)
 {
-  char buf2[max_portname_length];
-	
-	if(type==DIGITAL_INPUT | type==DIGITAL_OUTPUT)
-	{
 
-		//If user doesn't specify port name, then create one of the form  "GPION" where N is the port number
-		if(strcmp(portName,"")==0)
-		{
-			char buf1[max_portname_length];
-			char buf2[max_portname_length];
-      
-			flatten_string(buf1,max_portname_length);
-			flatten_string(buf2,max_portname_length);
+  if( portName.equals("") )
+  {
+    String autoName;
+    if(type==DIGITAL_INPUT | type==DIGITAL_OUTPUT)  
+      autoName = "GPIO" + String(portNumber);
+    else if(type==ANALOG_INPUT)
+      autoName = "ADC";
 
-			itoa(portNumber,buf1,10);		
-			strcat(buf2,"GPIO");
-			strcat(buf2,buf1);			
-		}
-	}
-	else if(type==ANALOG_INPUT)
-	{
-		//If user doesn't specify an analog_input port name then they are given "ADC"
-		if(strcmp(portName,"")==0)
-		{
-			flatten_string(buf2,max_portname_length);
-			strcpy(buf2,"ADC");
-		}
-	}
-  flatten_string(gpios[portNumber].portName,max_portname_length);
-  if( strcmp(portName,"") == 0 )
-    strcpy( gpios[portNumber].portName, buf2 );
+    gpios[portNumber].portName = autoName;
+  }
   else
-    strcpy( gpios[portNumber].portName, portName );   
+  {
+    gpios[portNumber].portName = portName;
+  }
   gpios[portNumber].gpio_type = type;
   gpios[portNumber].active = true;
 }
@@ -174,11 +156,11 @@ void IotPipe_GPIO::print()
       continue;
 
     if(gpios[i].gpio_type==DIGITAL_INPUT)
-      LOG_DEBUG_ARGS("INPUT Port %d: %s", i, gpios[i].portName);
+      LOG_DEBUG_ARGS("INPUT Port %d: %s", i, gpios[i].portName.c_str());
     else if(gpios[i].gpio_type==DIGITAL_OUTPUT)
-      LOG_DEBUG_ARGS("OUTPUT Port %d: %s", i, gpios[i].portName);
+      LOG_DEBUG_ARGS("OUTPUT Port %d: %s", i, gpios[i].portName.c_str());
     else if(gpios[i].gpio_type==ANALOG_INPUT)
-      LOG_DEBUG_ARGS("ADC Port %d: %s", i, gpios[i].portName);      
+      LOG_DEBUG_ARGS("ADC Port %d: %s", i, gpios[i].portName.c_str());      
   } 
 }
 
@@ -193,16 +175,16 @@ void IotPipe_GPIO::print_input_values()
       continue;
 
     if(gpios[i].gpio_type==DIGITAL_INPUT)
-      LOG_DEBUG_ARGS("INPUT Port %d: %s -- %d", i, gpios[i].portName, gpios[i].value);
+      LOG_DEBUG_ARGS("INPUT Port %d: %s -- %d", i, gpios[i].portName.c_str(), gpios[i].value);
 
     else if(gpios[i].gpio_type==ANALOG_INPUT)
-      LOG_DEBUG_ARGS("ADC Port %d: %s -- %d", i, gpios[i].portName, gpios[i].value);      
+      LOG_DEBUG_ARGS("ADC Port %d: %s -- %d", i, gpios[i].portName.c_str(), gpios[i].value);      
       
   }  
 }
 
 
-bool IotPipe_GPIO::jsonifyInputScan(char *buf, const int bufLength)
+bool IotPipe_GPIO::jsonifyInputScan(String& buf)
 {
 
   for(int i = 0; i < 18; i++)
@@ -218,8 +200,8 @@ bool IotPipe_GPIO::jsonifyInputScan(char *buf, const int bufLength)
       gpios[i].value = analogRead(i);
     
   }
-
-  StaticJsonBuffer<200> jsonBuffer;
+  
+  StaticJsonBuffer<max_json_payload_length> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
   for(int i = 0; i < 18; i++)
   {
@@ -237,107 +219,100 @@ bool IotPipe_GPIO::jsonifyInputScan(char *buf, const int bufLength)
 
 
   
-  if(len > bufLength)
+  if(len > max_json_payload_length)
   {
     LOG_DEBUG("Error.  The JSON payload cannot fit into the allocated json buffer.");
     return false;
   }
-  root.printTo(buf,bufLength);
+  root.printTo(buf);
   return true; 
 }
 
-/*
+
 //Scans MQTT payload and checks if any OUTPUT port is mentioned
-bool IotPipe_GPIO::gpio_update_outputs(char *jsonString)
+bool IotPipe_GPIO::gpio_update_outputs(String msg)
 {
 
-	jsmn_parser parser;
-	jsmntok_t tokens[max_jsmn_tokens];
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(msg);
+  //check json is valid  
+  if (!root.success()) {
+    LOG_DEBUG_ARGS("JSON received is not valid");
+    return false;
+  }
 
-	jsmn_init(&parser);
 
-	//r is the # of tokens returned.
-	int r = jsmn_parse(&parser, jsonString, strlen(jsonString), tokens, max_jsmn_tokens);
-	//if r < 1 or the first token isn't a JSMN_OBJECT
-	if (r < 1 || tokens[0].type!=JSMN_OBJECT)
+	//Iterate through all GPIOs.  For each GPIO see if it is included in json string
+	for(int i = 0; i < 18; i++)
 	{
-		LOG_DEBUG("Nothing to be updated.");
-		return true;
-	}
-
-	int i = 0;
-	gpio_node_t *node = gpio_head->next;
-	while(node!=NULL)
-	{
-		if(node->gpio_type==DIGITAL_OUTPUT)
+		if(gpios[i].gpio_type==DIGITAL_OUTPUT)
 		{
 			//start at i = 1, since i = 0 is the JSMN_OBJECT token (aka the root)
-			for(i = 1; i < r; i++)
-			{
-				LOG_DEBUG_ARGS("i: %d",i);
-				if ( jsoneq(jsonString, &tokens[i],node->portName) == 0)
-				{	
-					//We may use strndup() to fetch string value 
-					int bufLen = tokens[i+1].end - tokens[i+1].start + 1;
-
-					char *buf = (char *)os_zalloc( sizeof(char)*bufLen );
-					if(buf==NULL)
-					{
-						LOG_DEBUG_ARGS("Couldn't allocate memory.  Needed %d bytes.", sizeof(char)*bufLen);
-						return false;
-					}
-			
-					int k,z=0;
-					for(k=tokens[i+1].start; k < tokens[i+1].end; k++)
-					{
-						buf[z]=jsonString[k];
-						z++;
-					}
-					buf[z]='\0';
-					updateOutput(node,buf);
-					os_free(buf);
-					break;
-				}
+		 for (JsonObject::iterator it=root.begin(); it!=root.end(); ++it)
+		 {
+		  if( gpios[i].portName.equals(it->key) )
+		  {
+        const char* c_val = root[it->key];
+        String value( c_val ); //Service always returns a string as the json value.
+		  	updateOutput(&gpios[i],value);
+        LOG_DEBUG_ARGS("Output %s to be updated", gpios[i].portName.c_str());
+			  break;
 			}
-		}
-		node=node->next;
+		 }
+	  }
 	}
-
+	
 	return true;
 }
 
-void IotPipe_GPIO::updateOutput(gpio_node_t *node, char *newValue)
+
+void IotPipe_GPIO::updateOutput(gpio_node_t *node, String newValue)
 {
 
-	if( strcmp(newValue,"low")==0 | strcmp(newValue,"high")==0 )
+	if( newValue.equals("low") | newValue.equals("high") | newValue.equals("flip") )
 	{
-		LOG_DEBUG("Updating output:");
-		LOG_DEBUG_ARGS("\t%s: %s-->%s", node->portName, node->value ? "high" : "low", newValue);
+    LOG_DEBUG("Updating output:");
+    if ( newValue.equals("flip") )
+    {
+      if ( node->value==0 )
+        LOG_DEBUG_ARGS("\t%s: low-->high", node->portName.c_str());    
+      else
+        LOG_DEBUG_ARGS("\t%s: high-->low", node->portName.c_str());    
+        
+    }
+    else
+    {
+      LOG_DEBUG_ARGS("\t%s: %s-->%s", node->portName.c_str(), node->value ? "high" : "low", newValue.c_str());  
+    }
+		
 	}
 	else
 	{
-		LOG_DEBUG_ARGS("Cannot update output because %s isn't a valid value.", newValue);
+		LOG_DEBUG_ARGS("Cannot update output because %s isn't a valid value.", newValue.c_str());
 	}
 
-	if(strcmp(newValue,"low")==0)
+	if( newValue.equals("low") )
 	{
 		node->value = 0;
-		set_gpio_output_low(node->portNumber);
+		digitalWrite(node->portNumber, LOW);
 	}
-	else if(strcmp(newValue,"high")==0)
+	else if( newValue.equals("high") )
 	{
 		node->value = 1;
-		set_gpio_output_high(node->portNumber);
+		digitalWrite(node->portNumber, HIGH);
 	}	
+  else if( newValue.equals("flip") )
+  {
+    if(node->value==1)
+    {      
+      node->value=0;
+      digitalWrite(node->portNumber, LOW);
+    }
+    else
+    {
+      node->value=1;
+      digitalWrite(node->portNumber, HIGH);      
+    }
+  }
 }
 
-
-int IotPipe_GPIO::jsoneq(const char *json, jsmntok_t *tok, const char *s) 
-{
-	if (tok->type == JSMN_STRING && (int) strlen(s) == tok->end - tok->start && strncmp(json + tok->start, s, tok->end - tok->start) == 0) 
-	{
-		return 0;
-	}
-	return -1;
-}
-*/

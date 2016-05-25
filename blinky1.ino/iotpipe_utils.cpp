@@ -5,12 +5,12 @@ char buf[max_msg_length+1];
 
 namespace IotPipe_Utils
 {
-	void LOG_DEBUG(char *message)
+	void LOG_DEBUG(const char *message)
 	{
 		Serial.println(message);
 	}
 
-	void LOG_DEBUG_ARGS(char *message,...)
+	void LOG_DEBUG_ARGS(const char *message,...)
 	{
 
 		va_list arguments;

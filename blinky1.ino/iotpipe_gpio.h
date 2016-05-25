@@ -1,6 +1,8 @@
 #ifndef IOTPIPE_GPIO_H_
 #define IOTPIPE_GPIO_H_
 
+#include <Arduino.h>
+
 const int max_portname_length = 16;
 const int max_jsmn_tokens = 128;
 
@@ -8,7 +10,7 @@ const int max_jsmn_tokens = 128;
 typedef struct input_node
 {
 	int portNumber;
-	char portName[max_portname_length];
+	String portName;
 	int gpio_type;
 	int value;
 	bool active;
@@ -20,7 +22,7 @@ typedef enum {DIGITAL_INPUT, ANALOG_INPUT, DIGITAL_OUTPUT} gpio_mode;
 
 
 const int gpio_mask[] = {1,0,1,0,1,1,0,0,0,0,0,0,1,1,1,1,0,1}; //valid gpios are 0,2,4,5,12,13,14,15.  Final spot is for ADC.
-
+const int max_json_payload_length = 256;
 class IotPipe_GPIO
 {
 	public:
@@ -30,28 +32,25 @@ class IotPipe_GPIO
     void print();
     void print_input_values();
 
-    bool setPortAsDigitalInput(int portNum, char *portName);		
-		bool setPortAsAnalogInput(char *portName);
-		bool setPortAsDigitalOutput(int portNum, char *portName);
+    bool setPortAsDigitalInput(int portNum, String portName);		
+		bool setPortAsAnalogInput(String portName);
+		bool setPortAsDigitalOutput(int portNum, String portName);
         
 		//updates value field in each node of gpio_head
-		bool jsonifyInputScan(char *buf, int bufLength);
+		bool jsonifyInputScan(String& buf);
 		
-		//bool gpio_update_outputs(char *jsonString);
+		bool gpio_update_outputs(String msg);
 	private:
-		bool isPortNameValid(char *portName, int type);  
+		bool isPortNameValid(String portName, int type);  
 		bool isValidGPIO(int portNum);  
 		gpio_node_t gpios[18]; //17 (0 to 16) gpios on ESP8266 + 1 ADC
-    //GPIOs of the same type cannot have the same name
     
-		void addNode(int pin, char *portName, int type);
+    
+		void addNode(int pin, String portName, int type);
 		
-		/*
 		//Checks if port # is a valid GPIO for the ESP8266
 		//sets output pins high or low
-		int jsoneq(const char *json, jsmntok_t *tok, const char *s);
-		void updateOutput(gpio_node_t *node, char *newValue);
-		*/
+		void updateOutput(gpio_node_t *node, String newValue);    
 };
 
 #endif

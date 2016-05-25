@@ -12,8 +12,8 @@
 namespace IotPipe_Utils
 {
 	
-	void LOG_DEBUG_ARGS(char *message,...);
-	void LOG_DEBUG(char *message);
+	void LOG_DEBUG_ARGS(const char *message,...);
+	void LOG_DEBUG(const char *message);
 
 	//flatten strings with null characters
 	void flatten_string(char *str,int len);
