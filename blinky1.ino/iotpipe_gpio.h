@@ -2,6 +2,7 @@
 #define IOTPIPE_GPIO_H_
 
 #include <Arduino.h>
+#include "iotpipe_sntp.h"
 
 const int max_portname_length = 16;
 const int max_jsmn_tokens = 128;

@@ -1,5 +1,7 @@
 #include "iotpipe_gpio.h"
 #include "iotpipe_utils.h"
+#include "iotpipe_sntp.h"
+
 #include <ArduinoJson.h>
 
 using namespace IotPipe_Utils;
@@ -213,7 +215,8 @@ bool IotPipe_GPIO::jsonifyInputScan(String& buf)
             
     root[gpios[i].portName] = gpios[i].value;    
   }
-  root.set<long>("time", 1351824120);
+  IotPipe_SNTP timeGetter;
+  root.set<long>("time", 1000UL * timeGetter.getEpochTimeInSeconds());
 
   int len = root.measureLength();
 
