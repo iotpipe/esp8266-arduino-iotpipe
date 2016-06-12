@@ -31,7 +31,7 @@ class IotPipe
     //Scans all input ports and creates a JSON payload of thier values which can be read by IoT Pipe web service 
     //Arguments:  The buffer to which the JSON payload will be written as well as the maximum length of the buffer 
     //Return: True/False to designate a success or failure 
-    bool scan(String& buf); 
+    bool scan(String &buf); 
  
  
     //Reads a JSON payload from IoT Pipe web service that contains the desired values of output ports. 
@@ -39,9 +39,31 @@ class IotPipe
     //Return: True/False to designate a success or failure 
     bool update_outputs(String topic, String msg);
 
+
+    //Generates the topic to which the device subscribes to receive updates to its output ports
+    //Arguments: Pass in an already allocated c-style char array that is at least 32 bytes (characters) in length
+    //Return: True/False to designate success or failure
+    bool get_output_topic(char *topicBuf, int len);
+
+    //Generates the topic to which the device subscribes to receive updates to its output ports
+    //Arguments: Pass in a C++ style string
+    //Return: True/False to designate success or failure
+    bool get_output_topic(String& topicBuf);
+
+    //Generates the topic to which the device publishes when sampling input ports
+    //Arguments: Pass in an already allocated c-style char array that is at least 32 bytes (characters) in length
+    //Return: True/False to designate success or failure
+    bool get_sampling_topic(char *topicBuf, int len);
+
+    //Generates the topic to which the device publishes when sampling input ports
+    //Arguments: Pass in a C++ style string
+    //Return: True/False to designate success or failure
+    bool get_sampling_topic(String& topicBuf);
+
   private:
     IotPipe_GPIO gpio;
-    String topic;
+    String samplingTopic;
+    String outputTopic;
 };
 
 

@@ -197,7 +197,6 @@ bool IotPipe_GPIO::jsonifyInputScan(String& buf)
 
     if (gpios[i].gpio_type==DIGITAL_INPUT)
       gpios[i].value = digitalRead(i);
-
     else if(gpios[i].gpio_type==ANALOG_INPUT)
       gpios[i].value = analogRead(i);
     
@@ -212,11 +211,17 @@ bool IotPipe_GPIO::jsonifyInputScan(String& buf)
 
     if(gpios[i].active == false)
       continue;
-            
-    root[gpios[i].portName] = gpios[i].value;    
+    if(gpios[i].gpio_type==ANALOG_INPUT | gpios[i].gpio_type==DIGITAL_INPUT)            
+      root[gpios[i].portName] = gpios[i].value;    
   }
   IotPipe_SNTP timeGetter;
-  root.set<long>("time", 1000UL * timeGetter.getEpochTimeInSeconds());
+  LOG_DEBUG_ARGS("time in seconds: %d", timeGetter.getEpochTimeInSeconds());
+
+  //We cast time to a string so we can append three 0's.  This is because we can't handle longs on the arduino.
+  String timeBuf = String(timeGetter.getEpochTimeInSeconds());
+  timeBuf = timeBuf + "000";
+  LOG_DEBUG_ARGS("time in milli-seconds: %s", timeBuf.c_str());
+  root.set<String>("timestamp", timeBuf);
 
   int len = root.measureLength();
 

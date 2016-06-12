@@ -23,12 +23,20 @@
 #include <PubSubClient.h>
 #include "Arduino.h"
 #include "iotpipe.h"
+#include "iotpipe_utils.h"
+
+using namespace IotPipe_Utils;
 
 // Update these with values suitable for your network.
-const char* ssid = "CenturyLink2926";
-const char* password = "deec634bbfrbfe";
-const char* mqtt_server = "iot.eclipse.org";
-const char* deviceId = "1234";
+//const char* ssid = "CenturyLink2926";
+//const char* password = "deec634bbfrbfe";
+const char *ssid = "Adam’s iPhone";                    
+const char *password = "asdftemp";
+const char* mqtt_server = "broker.iotpipe.io";
+const char* deviceId = "a75dfbb18d71a7f";
+const char* mqtt_user = "e59ab9c78622f2689e1f533ffbdf78d";
+const char* mqtt_pass = "5cf3f075d166cea7e59e8116c65185e";
+
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -46,13 +54,15 @@ void setup_wifi() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
 
+  
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-
+  
+  
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
@@ -80,10 +90,13 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("ESP8266Client")) {
+    if (client.connect("ESP8266Client",mqtt_user,mqtt_pass)) {
       Serial.println("connected");
       // ... and resubscribe
-      client.subscribe("/testing1818/onoff");
+      String topic;
+      iotpipe.get_output_topic(topic);
+      client.subscribe(topic.c_str());
+      
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -100,8 +113,9 @@ void setup() {
 
   iotpipe.addDigitalOutputPort(4, "R_LED");
   iotpipe.addDigitalOutputPort(5, "G_LED");
-
-
+  iotpipe.addDigitalInputPort(12,"Temperature");
+  iotpipe.addDigitalInputPort(13,"Humidity");
+  iotpipe.addAnalogInputPort("Light");
 
   setup_wifi();
   client.setServer(mqtt_server, 1883);
@@ -112,9 +126,13 @@ void loop()
 {
 
   if (!client.connected()) {
-  reconnect();
+    reconnect();
   }
   client.loop();
- 
+  String buf;
+  iotpipe.scan(buf);
+  String topic;
+  iotpipe.get_sampling_topic(topic);
+  client.publish(topic.c_str(), buf.c_str());
   delay(3000);
 }
