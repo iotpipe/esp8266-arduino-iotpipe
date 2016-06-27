@@ -28,10 +28,10 @@
 using namespace IotPipe_Utils;
 
 // Update these with values suitable for your network.
-//const char* ssid = "CenturyLink2926";
-//const char* password = "deec634bbfrbfe";
-const char *ssid = "Adam’s iPhone";                    
-const char *password = "asdftemp";
+const char* ssid = "CenturyLink2926";
+const char* password = "deec634bbfrbfe";
+//const char *ssid = "Adam’s iPhone";                    
+//const char *password = "asdftemp";
 const char* mqtt_server = "broker.iotpipe.io";
 const char* deviceId = "a75dfbb18d71a7f";
 const char* mqtt_user = "e59ab9c78622f2689e1f533ffbdf78d";
