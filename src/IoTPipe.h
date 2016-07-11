@@ -3,6 +3,9 @@
 
 #include "iotpipe_gpio.h"
 #include "Arduino.h"
+#include "iotpipe_utils."
+
+using namespace IoTPipe_Utils;
 
 class IotPipe
 {
@@ -60,10 +63,20 @@ class IotPipe
     //Return: True/False to designate success or failure
     bool get_sampling_topic(String& topicBuf);
 
+    //Arguments: None
+    //Returns: The MQTT Port as an integer
+    int get_port() {return this->port;}
+
+    //Arguments: None
+    //Returns: The MQTT Server as a String
+    String get_server() {return this->server.c_string();}
+
   private:
     IotPipe_GPIO gpio;
     String samplingTopic;
     String outputTopic;
+    String server;
+    int port;
 };
 
 
