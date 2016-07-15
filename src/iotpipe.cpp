@@ -1,14 +1,11 @@
 #include "iotpipe.h"
-#include "iotpipe_utils.h"
-
-using namespace IotPipe_Utils;
 
 IotPipe::IotPipe(String deviceId)
 {
         this->samplingTopic = "sampling/" + deviceId;
         this->outputTopic = "outputport/" + deviceId;
 	this->port = 1883;
-	this->server = "broker.iotpipe.io";
+	this->server = "tcp://broker.iotpipe.io";
 }
 
 IotPipe::IotPipe(const char* deviceId)
@@ -16,7 +13,7 @@ IotPipe::IotPipe(const char* deviceId)
         this->samplingTopic = "sampling/" + String(deviceId);
         this->outputTopic = "outputport/" + String(deviceId);
 	this->port = 1883;
-	this->server = "broker.iotpipe.io";
+	this->server = "tcp://broker.iotpipe.io";
 }
 
 IotPipe::~IotPipe()

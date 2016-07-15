@@ -3,9 +3,9 @@
 
 #include "iotpipe_gpio.h"
 #include "Arduino.h"
-#include "iotpipe_utils."
+#include "iotpipe_utils.h"
 
-using namespace IoTPipe_Utils;
+using namespace IotPipe_Utils;
 
 class IotPipe
 {
@@ -69,7 +69,7 @@ class IotPipe
 
     //Arguments: None
     //Returns: The MQTT Server as a String
-    String get_server() {return this->server.c_string();}
+    String get_server() {return this->server;}
 
   private:
     IotPipe_GPIO gpio;

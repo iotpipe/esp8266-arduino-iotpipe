@@ -30,25 +30,25 @@ class IotPipe_GPIO
 		IotPipe_GPIO();
 		~IotPipe_GPIO();
 
-    void print();
-    void print_input_values();
+		void print();
+		void print_input_values();
 
-    bool setPortAsDigitalInput(int portNum, String portName);		
+		bool setPortAsDigitalInput(int portNum, String portName);		
 		bool setPortAsAnalogInput(String portName);
 		bool setPortAsDigitalOutput(int portNum, String portName);
-        
+
 		//updates value field in each node of gpio_head
 		bool jsonifyInputScan(String& buf);
-		
+
 		bool gpio_update_outputs(String msg);
 	private:
 		bool isPortNameValid(String portName, int type);  
 		bool isValidGPIO(int portNum);  
 		gpio_node_t gpios[18]; //17 (0 to 16) gpios on ESP8266 + 1 ADC
-    
-    
+
+
 		void addNode(int pin, String portName, int type);
-		
+
 		//Checks if port # is a valid GPIO for the ESP8266
 		//sets output pins high or low
 		void updateOutput(gpio_node_t *node, String newValue);    

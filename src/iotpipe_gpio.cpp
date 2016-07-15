@@ -82,7 +82,7 @@ bool IotPipe_GPIO::setPortAsDigitalInput(int portNum, String portName)
 	addNode(portNum, portName, DIGITAL_INPUT);
  
 	pinMode(portNum, INPUT);           // set pin to input
-  digitalWrite(portNum, HIGH);       // turn on pullup resistors
+	digitalWrite(portNum, HIGH);       // turn on pullup resistors
 	
 	return true;
 }
@@ -119,7 +119,7 @@ bool IotPipe_GPIO::setPortAsDigitalOutput(int portNum, String portName)
 	addNode(portNum, portName, DIGITAL_OUTPUT);
 	
 	pinMode(portNum,OUTPUT);
-  digitalWrite(portNum,HIGH);
+	digitalWrite(portNum,HIGH);
 
 	return true;
 
@@ -215,12 +215,20 @@ bool IotPipe_GPIO::jsonifyInputScan(String& buf)
       root[gpios[i].portName] = gpios[i].value;    
   }
   IotPipe_SNTP timeGetter;
+
+
+
+  if(timeGetter.getEpochTimeInSeconds() == 0)
+  {
+    LOG_DEBUG_ARGS("Haven't yet connected to NTP Server.");
+    return false;
+  }
   LOG_DEBUG_ARGS("time in seconds: %d", timeGetter.getEpochTimeInSeconds());
 
   //We cast time to a string so we can append three 0's.  This is because we can't handle longs on the arduino.
   String timeBuf = String(timeGetter.getEpochTimeInSeconds());
   timeBuf = timeBuf + "000";
-  LOG_DEBUG_ARGS("time in milli-seconds: %s", timeBuf.c_str());
+
   root.set<String>("timestamp", timeBuf);
 
   int len = root.measureLength();
@@ -276,22 +284,21 @@ bool IotPipe_GPIO::gpio_update_outputs(String msg)
 
 void IotPipe_GPIO::updateOutput(gpio_node_t *node, String newValue)
 {
-
+	newValue.toLowerCase();
 	if( newValue.equals("low") | newValue.equals("high") | newValue.equals("flip") )
 	{
-    LOG_DEBUG("Updating output:");
-    if ( newValue.equals("flip") )
-    {
-      if ( node->value==0 )
-        LOG_DEBUG_ARGS("\t%s: low-->high", node->portName.c_str());    
-      else
-        LOG_DEBUG_ARGS("\t%s: high-->low", node->portName.c_str());    
-        
-    }
-    else
-    {
-      LOG_DEBUG_ARGS("\t%s: %s-->%s", node->portName.c_str(), node->value ? "high" : "low", newValue.c_str());  
-    }
+    		LOG_DEBUG("Updating output:");
+		if ( newValue.equals("flip") )
+		{
+			if ( node->value==0 )
+				LOG_DEBUG_ARGS("\t%s: low-->high", node->portName.c_str());    
+			else
+				LOG_DEBUG_ARGS("\t%s: high-->low", node->portName.c_str());    
+		}
+		else
+		{
+			LOG_DEBUG_ARGS("\t%s: %s-->%s", node->portName.c_str(), node->value ? "high" : "low", newValue.c_str());  
+		}
 		
 	}
 	else
@@ -309,18 +316,18 @@ void IotPipe_GPIO::updateOutput(gpio_node_t *node, String newValue)
 		node->value = 1;
 		digitalWrite(node->portNumber, HIGH);
 	}	
-  else if( newValue.equals("flip") )
-  {
-    if(node->value==1)
-    {      
-      node->value=0;
-      digitalWrite(node->portNumber, LOW);
-    }
-    else
-    {
-      node->value=1;
-      digitalWrite(node->portNumber, HIGH);      
-    }
-  }
+	else if( newValue.equals("flip") )
+	{
+		if(node->value==1)
+		{      
+			node->value=0;
+			digitalWrite(node->portNumber, LOW);
+		}
+		else
+		{
+			node->value=1;
+			digitalWrite(node->portNumber, HIGH);      
+		}
+	}
 }
 

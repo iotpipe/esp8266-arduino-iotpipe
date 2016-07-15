@@ -5,13 +5,13 @@ Much thanks to knolleary for his PubSubClient, from which much of this example w
 
 
 /*
- * This Tutorial will allow you to turn an LED on and off from the IoT Pipe website.  The tutorial can be found at http://localhost:3000/esp8266arduinointro
+ * This Tutorial will allow you to turn an LED on and off from the IoT Pipe website.  The tutorial can be found at http://www.iotpipe.io/esp8266arduinointro
 */
 
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-#include <IoTPipe.h>
+#include "iotpipe.h"
 
 // Update these with values suitable for your network.
 const char* ssid = "PLACEHOLDER";
@@ -19,12 +19,51 @@ const char* password = "PLACEHOLDER";
 const char* deviceId = "PLACEHOLDER";
 const char* mqtt_user = "PLACEHOLDER";
 const char* mqtt_pass = "PLACEHOLDER";
-const char* mqtt_server = "broker.iotpipe.io";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 IotPipe iotpipe(deviceId);
 
+
+//Choose a GPIO to connect to the LED.  Here we are using GPIO4 but you can change it.
+void setup_iotpipe()
+{
+  iotpipe.addDigitalOutputPort(4,"LED");
+}
+
+//This is our initial setup.
+//We connect to Wi-Fi and setup our connection to the IoT Pipe server.
+void setup() { 
+  Serial.begin(115200);
+  setup_iotpipe();
+  setup_wifi();
+
+ 
+  client.setServer("broker.iotpipe.io",1883);
+  client.setCallback(message_received);
+}
+
+//This loop runs indefinitely and does the following:
+//Checks if we are connected to IoT Pipe server
+//If we aren't connected, then reconnect.
+void loop()
+{
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//
+//              Beyond this point is functionality for Wi-Fi connectivity and MQTT messaging.  Don't touch unless you know what you are doing. :)
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //This function is called when a message is received from the server
 void message_received(char* topic, byte* payload, unsigned int length) {
@@ -41,40 +80,6 @@ void message_received(char* topic, byte* payload, unsigned int length) {
   //This will parse the message, and turn the the LED on or off.
   iotpipe.update_outputs(top, msg);
 }
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//
-//              Beyond this point is functionality for Wi-Fi connectivity and MQTT messaging.  Don't touch unless you know what you are doing. :)
-//
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//This is our initial setup.
-//We connect to Wi-Fi and setup our connection to the IoT Pipe server.
-void setup() { 
-  Serial.begin(115200);
-  setup_wifi();
-  client.setServer(iotpipe.server, iotpipe.port);
-  client.setCallback(message_received);
-}
-
-//This loop runs indefinitely and does the following:
-//Checks if we are connected to IoT Pipe server
-//If we aren't connected, then reconnect.
-void loop()
-{
-  if (!client.connected()) {
-    reconnect();
-  }
-  client.loop();
-}
-
-
-
 
 long lastMsg = 0;
 char msg[50];
