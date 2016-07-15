@@ -11,7 +11,7 @@ Use this API to connect your ESP8266 to IoT Pipe.  With IoT Pipe you can easily 
 <ul>
 <li>ArduinoJSON</li>
 <li>PubSubClient</li>
-<ul>
+</ul>
 
 
 <h2>Usage - Input mode</h2>
