@@ -50,11 +50,11 @@ void loop()
   }
 
   //Once per loop create a payload that contains informatino about all of your input ports so data can be sent to server.
-  String payload,topic;
-  iotpipe.get_sampling_topic(topic);
-  bool success = iotpipe.scan(payload);
-  if(success==true)
+  String topic = iotpipe.get_sampling_topic();
+  String payload = iotpipe.scan();
+  if(payload.length()>0)
   {
+    Serial.print("Publishing payload: ");
     Serial.println(payload);  
     client.publish(topic.c_str(),payload.c_str(),payload.length());
   }

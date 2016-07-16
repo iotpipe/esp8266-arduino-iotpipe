@@ -113,8 +113,7 @@ void reconnect() {
     if (client.connect("ESP8266Client",mqtt_user,mqtt_pass)) {
       Serial.println("connected");
       // ... and resubscribe
-      String topic;
-      iotpipe.get_output_topic(topic);
+      String topic = iotpipe.get_output_topic();
       client.subscribe(topic.c_str());
       
     } else {

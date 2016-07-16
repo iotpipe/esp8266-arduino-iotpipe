@@ -32,9 +32,9 @@ class IotPipe
  
  
     //Scans all input ports and creates a JSON payload of thier values which can be read by IoT Pipe web service 
-    //Arguments:  The buffer to which the JSON payload will be written as well as the maximum length of the buffer 
-    //Return: True/False to designate a success or failure 
-    bool scan(String &buf); 
+    //Arguments: None 
+    //Return: JSON payload of scanned results.  Empty string if there was a failure
+    String scan(); 
  
  
     //Reads a JSON payload from IoT Pipe web service that contains the desired values of output ports. 
@@ -44,24 +44,15 @@ class IotPipe
 
 
     //Generates the topic to which the device subscribes to receive updates to its output ports
-    //Arguments: Pass in an already allocated c-style char array that is at least 32 bytes (characters) in length
-    //Return: True/False to designate success or failure
-    bool get_output_topic(char *topicBuf, int len);
+    //Arguments: None
+    //Return: String with the output topic
+    String get_output_topic();
 
-    //Generates the topic to which the device subscribes to receive updates to its output ports
-    //Arguments: Pass in a C++ style string
-    //Return: True/False to designate success or failure
-    bool get_output_topic(String& topicBuf);
 
     //Generates the topic to which the device publishes when sampling input ports
-    //Arguments: Pass in an already allocated c-style char array that is at least 32 bytes (characters) in length
-    //Return: True/False to designate success or failure
-    bool get_sampling_topic(char *topicBuf, int len);
-
-    //Generates the topic to which the device publishes when sampling input ports
-    //Arguments: Pass in a C++ style string
-    //Return: True/False to designate success or failure
-    bool get_sampling_topic(String& topicBuf);
+    //Arguments: None 
+    //Return: String with the sampling topic
+    String get_sampling_topic();
 
     //Arguments: None
     //Returns: The MQTT Port as an integer
