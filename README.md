@@ -1,10 +1,18 @@
- <h1>ESP8266 Library's for the IoT Pipe web service</h1>
- <h3>Built on-top of the ESP8266/Arduino library</h3>
- 
- 
-Use this API to connect your ESP8266 to IoT Pipe.  With IoT Pipe you can easily send your data to the cloud where you can graph, analyze, and build alerts and notifications through our web interface.
+<h1>ESP8266 Library's for the IoT Pipe web service</h1>
 
-<h3>https://www.iotpipe.io</h3>
+<h2>What is IoT Pipe</h2>
+IoT Pipe is a web service which makes it easy for you, the DIY-er, to connect your projects to the internet.  Our APIs make it easy to send and receive data between your project and our web service.  You can send and analyze your data, setup alerts and notifications, and much more.
+
+<h2>How does it work</h2>
+IoT Pipe uses MQTT, which is the language the Internet of Things uses to communicate. It is a lightweight messaging protocoll that makes it easy to communicate between computers and devices.
+
+IoT Pipe has built a web interface and API on top of MQTT which makes it easy for users to send and receive data between their devices and our web service.  With this data our web service makes it easy to graph and analyze your data, setup alerts and notifications, and much more.
+
+
+<h2>Built on-top of the ESP8266/Arduino library</h2>
+Use this API to connect your ESP8266 to IoT Pipe.  You can find more detailed tutorials, with pictures and videos for the ESP8266 at the site linked below.
+
+<h3>https://iotpipe.io/esp8266</h3>
 
 
 <h2>Dependencies (available through Arduino's Library Manager):</h2>
