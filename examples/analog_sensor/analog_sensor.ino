@@ -4,7 +4,7 @@ Much thanks to knolleary for his PubSubClient, from which much of this example w
 
 
 /*
- * This Tutorial will allow you to sample GPIOs on your ESP8266 and send the valuesto the IoT Pipe website.  The tutorial can be found at http://www.iotpipe.io/esp8266arduinointro
+ * This Tutorial will allow you to sample the ADC on your ESP8266 and send the value to the IoT Pipe website.  The an introductory tutorial can be found at http://www.iotpipe.io/esp8266
 */
 
 
@@ -12,12 +12,20 @@ Much thanks to knolleary for his PubSubClient, from which much of this example w
 #include <PubSubClient.h>
 #include "iotpipe.h"
 
-// Update these with values suitable for your network.
+// Update these with suitable values.
 const char* ssid = "PLACEHOLDER";
 const char* password = "PLACEHOLDER";
 const char* deviceId = "PLACEHOLDER";
 const char* mqtt_user = "PLACEHOLDER";
 const char* mqtt_pass = "PLACEHOLDER";
+
+//Wait time between sensor readings
+const int waitTimeInMilliseconds = 2000; //2 seconds wait time before reading sensor and sending next value.  Note that this time is approximate.
+
+//Name of the pin
+const String sensorName="PLACEHOLDER";
+
+
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -27,7 +35,7 @@ IotPipe iotpipe(deviceId);
 //Choose a GPIO to connect to your sensor.  Here we are using GPIO4.
 void setup_iotpipe()
 {
-  iotpipe.addDigitalInputPort(4,"Door");
+  iotpipe.addAnalogInputPort(sensorName);
 }
 
 //This is our initial setup.
@@ -60,7 +68,7 @@ void loop()
   }
 
   //Wait 2 seconds between data uploads
-  delay(2000);    
+  delay(waitTimeInMilliseconds);    
   client.loop();
 }
 
