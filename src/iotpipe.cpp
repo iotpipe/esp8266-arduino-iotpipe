@@ -21,40 +21,31 @@ IotPipe::~IotPipe()
         //do nothing
 }
 
-//Adds a GPIO to a list of input ports
-bool IotPipe::addDigitalInputPort(int portNum, String portName)
+//Adds a sensor to the list of outputs which can receive messages
+void IoTPipe::registerPin(int pin, String name)
 {
-        bool success = gpio.setPortAsDigitalInput(portNum, portName);
-        return success;
+
 }
 
-//Adds an analog GPIO to list of input ports
-bool IotPipe::addAnalogInputPort(String portName)
+//Takes a function that returns a float and generates a json payload that can be read by IoT Pipe service
+void IotPipe::jsonifyResult( float (*f)(), String name, String buf)
 {
-        bool success = gpio.setPortAsAnalogInput(portName);
-        return success;
+	float value = (*f)();
+	gpio.jsonifyScan(value, name, buf); 
+	return buf
 }
 
-//Adds a GPIO to a list of output ports
-bool IotPipe::addDigitalOutputPort(int portNum, String portName)
+//Takes a function that returns a float and generates a json payload that can be read by IoT Pipe service
+void IotPipe::jsonifyResult( int (*f)(), String name, String buf)
 {
-        bool success = gpio.setPortAsDigitalOutput(portNum, portName);
-        return success;
+	int value = (*f)();
+	gpio.jsonifyScan(value, name, buf); 
+	return buf
 }
 
-//Scans all input ports and creates a JSON payload of thier values which can be read by IoT Pipe web service
-String IotPipe::scan()
-{
-	String buf;
-	bool success = gpio.jsonifyInputScan(buf); 
-	if(success==true)
-		return buf;
-	else
-		return String("");
-}
 
 //Reads a JSON payload from IoT Pipe web service that contains the desired values of output ports.
-bool IotPipe::update_outputs(String topic, String msg)
+bool IotPipe::updateOutputs(String topic, String msg)
 {
   if( topic.equals(this->outputTopic) )
     return gpio.gpio_update_outputs(msg);
@@ -63,18 +54,15 @@ bool IotPipe::update_outputs(String topic, String msg)
 }
 
 
-
 //Generates the topic to which the device subscribes to receive updates to its output ports
-String IotPipe::get_output_topic()
+void IotPipe::getOutputTopic(String buf)
 {
-  return String(this->outputTopic);
+	buf = this->outputTopic;
 }
 
 
 //Generates the topic to which the device publishes when sampling input ports
-String IotPipe::get_sampling_topic()
+void IotPipe::getSamplingTopic(String buf)
 {
-  return String(this->samplingTopic);
-
+	buf = this->samplingTopic;
 }
-

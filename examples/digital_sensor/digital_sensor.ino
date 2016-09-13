@@ -10,11 +10,11 @@ Much thanks to knolleary for his PubSubClient, from which much of this example w
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-#include "iotpipe.h"
+#include "/home/akamor/esp8266-arduino-iotpipe/src/iotpipe.h"
 
 // Update these with suitable values.
-const char* ssid = "PLACEHOLDER";
-const char* password = "PLACEHOLDER";
+const char* ssid = "CenturyLink0638";
+const char* password = "5nesxjf5kym5nd";
 const char* deviceId = "PLACEHOLDER";
 const char* mqtt_user = "PLACEHOLDER";
 const char* mqtt_pass = "PLACEHOLDER";
@@ -33,21 +33,23 @@ PubSubClient client(espClient);
 IotPipe iotpipe(deviceId);
 
 
-//Choose a GPIO to connect to your sensor.  Here we are using GPIO4.
-void setup_iotpipe()
-{
-  iotpipe.addDigitalInputPort(sensorPin,sensorName);
-}
-
 //This is our initial setup.
 //We connect to Wi-Fi and setup our connection to the IoT Pipe server.
 void setup() {
   Serial.begin(115200);
-  setup_iotpipe();
-  setup_wifi();
 
-  client.setServer("broker.iotpipe.io",1883);
+  setup_wifi();
+  String server;
+  iotpipe.getServer(server);
+  int port = iotpipe.getPort();
+  client.setServer(server.c_str(), port);
 }
+
+float getResult()
+{
+  return rand()*10;
+}
+
 
 //This loop runs indefinitely and does the following:
 //Checks if we are connected to IoT Pipe server
@@ -59,13 +61,16 @@ void loop()
   }
 
   //Once per loop create a payload that contains informatino about all of your input ports so data can be sent to server.
-  String topic = iotpipe.get_sampling_topic();
-  String payload = iotpipe.scan();
+  String topic;
+  //iotpipe.getSamplingTopic(topic);
+
+  String payload="";
+  //iotpipe.jsonifyResult( &getResult , sensorName, payload);
   if(payload.length()>0)
   {
     Serial.print("Publishing payload: ");
     Serial.println(payload);  
-    client.publish(topic.c_str(),payload.c_str(),payload.length());
+    //client.publish(topic.c_str(),payload.c_str(),payload.length());
   }
 
   //Wait 2 seconds between data uploads
