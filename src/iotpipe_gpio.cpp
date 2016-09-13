@@ -249,13 +249,15 @@ bool IotPipe_GPIO::jsonifyInputScan(String& buf)
 bool IotPipe_GPIO::gpio_update_outputs(String msg)
 {
 
-  StaticJsonBuffer<200> jsonBuffer;
-  JsonObject& root = jsonBuffer.parseObject(msg);
-  //check json is valid  
-  if (!root.success()) {
-    LOG_DEBUG_ARGS("JSON received is not valid");
-    return false;
-  }
+	StaticJsonBuffer<200> jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(msg);
+
+	//check json is valid  
+	if (!root.success()) 
+	{
+		LOG_DEBUG_ARGS("JSON received is not valid");
+		return false;
+	}
 
 
 	//Iterate through all GPIOs.  For each GPIO see if it is included in json string
@@ -264,20 +266,19 @@ bool IotPipe_GPIO::gpio_update_outputs(String msg)
 		if(gpios[i].gpio_type==DIGITAL_OUTPUT)
 		{
 			//start at i = 1, since i = 0 is the JSMN_OBJECT token (aka the root)
-		 for (JsonObject::iterator it=root.begin(); it!=root.end(); ++it)
-		 {
-		  if( gpios[i].portName.equals(it->key) )
-		  {
-        const char* c_val = root[it->key];
-        String value( c_val ); //Service always returns a string as the json value.
-		  	updateOutput(&gpios[i],value);
-        LOG_DEBUG_ARGS("Output %s to be updated", gpios[i].portName.c_str());
-			  break;
-			}
-		 }
-	  }
-	}
-	
+			for (JsonObject::iterator it=root.begin(); it!=root.end(); ++it)
+		 	{
+		  		if( gpios[i].portName.equals(it->key) )
+		  		{
+					const char* c_val = root[it->key];
+					String value( c_val ); //Service always returns a string as the json value.
+					updateOutput(&gpios[i],value);
+					LOG_DEBUG_ARGS("Output %s to be updated", gpios[i].portName.c_str());
+					break;
+				}
+		 	}
+	  	}
+	}	
 	return true;
 }
 

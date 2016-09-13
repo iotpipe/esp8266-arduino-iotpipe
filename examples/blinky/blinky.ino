@@ -28,7 +28,7 @@ IotPipe iotpipe(deviceId);
 //Choose a GPIO to connect to the LED.  Here we are using GPIO4 but you can change it.
 void setup_iotpipe()
 {
-  iotpipe.addDigitalOutputPort(4,"LED");
+  iotpipe.addDigitalOutputPort(14,"ac_outlet");
 }
 
 //This is our initial setup.
@@ -39,7 +39,7 @@ void setup() {
   setup_wifi();
 
  
-  client.setServer("broker.iotpipe.io",1883);
+  client.setServer("iot.eclipse.org",1883);
   client.setCallback(message_received);
 }
 
@@ -114,6 +114,7 @@ void reconnect() {
       Serial.println("connected");
       // ... and resubscribe
       String topic = iotpipe.get_output_topic();
+      Serial.println(topic.c_str());
       client.subscribe(topic.c_str());
       
     } else {

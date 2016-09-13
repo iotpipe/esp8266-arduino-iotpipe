@@ -13,7 +13,7 @@ Much thanks to knolleary for his PubSubClient, from which much of this example w
 #include "iotpipe.h"
 
 // Update these with suitable values.
-const char* ssid = "PLACEHOLDER";
+const char* ssid = "PLACEHOLDEr";
 const char* password = "PLACEHOLDER";
 const char* deviceId = "PLACEHOLDER";
 const char* mqtt_user = "PLACEHOLDER";
@@ -23,7 +23,7 @@ const char* mqtt_pass = "PLACEHOLDER";
 const int waitTimeInMilliseconds = 2000; //2 seconds wait time before reading sensor and sending next value.  Note that this time is approximate.
 
 //Name of the pin
-const String sensorName="PLACEHOLDER";
+const String sensorName="light_sensor";
 
 
 
