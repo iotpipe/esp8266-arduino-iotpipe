@@ -10,17 +10,21 @@ Much thanks to knolleary for his PubSubClient, from which much of this example w
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-#include "/home/akamor/esp8266-arduino-iotpipe/src/iotpipe.h"
+#include <iotpipe.h>
 
 // Update these with suitable values.
-const char* ssid = "CenturyLink0638";
-const char* password = "5nesxjf5kym5nd";
+const char* ssid = "PLACEHOLDER";
+const char* password = "PLACEHOLDER";
 const char* deviceId = "PLACEHOLDER";
 const char* mqtt_user = "PLACEHOLDER";
 const char* mqtt_pass = "PLACEHOLDER";
+const char* server = "broker.iotpipe.io";
+const int port = 1883;
 
-//Wait time between sensor readings
-const int waitTimeInMilliseconds = 2000; //2 seconds wait time before reading sensor and sending next value.  Note that this time is approximate.
+
+
+//Wait time between sensor readings.  Note this time is approximate
+const int waitTimeInMilliseconds = 2000; 
 
 //Digita/ Pin # to be read and the name of the pin
 const int sensorPin = 4;
@@ -39,43 +43,48 @@ void setup() {
   Serial.begin(115200);
 
   setup_wifi();
-  String server;
-  iotpipe.getServer(server);
-  int port = iotpipe.getPort();
-  client.setServer(server.c_str(), port);
+  
+  client.setServer(server, port);
 }
 
-float getResult()
+//This function returns a value that is placed in the payload
+int getResult()
 {
-  return rand()*10;
+  return digitalRead(sensorPin);
 }
 
 
 //This loop runs indefinitely and does the following:
 //Checks if we are connected to IoT Pipe server
 //If we aren't connected, then reconnect.
+long lastSampleTime = 0;
+
 void loop()
 {
   if (!client.connected()) {
     reconnect();
   }
 
-  //Once per loop create a payload that contains informatino about all of your input ports so data can be sent to server.
-  String topic;
-  //iotpipe.getSamplingTopic(topic);
-
-  String payload="";
-  //iotpipe.jsonifyResult( &getResult , sensorName, payload);
-  if(payload.length()>0)
+  //Once per loop create a payload that contains information about all of your input ports so data can be sent to server.
+  long curTime = millis();
+  if(curTime - lastSampleTime > waitTimeInMilliseconds)
   {
-    Serial.print("Publishing payload: ");
-    Serial.println(payload);  
-    //client.publish(topic.c_str(),payload.c_str(),payload.length());
+    
+    String topic, payload;
+    iotpipe.getSamplingTopic(topic);
+      
+    iotpipe.jsonifyResult( getResult , sensorName, payload);  
+    
+    if(payload.length()>0)
+    {
+      Serial.print("Publishing payload: ");
+      Serial.println(payload);  
+      //client.publish(topic.c_str(),payload.c_str(),payload.length());
+    }
+    lastSampleTime=curTime;
   }
-
-  //Wait 2 seconds between data uploads
-  delay(waitTimeInMilliseconds);    
   client.loop();
+  delay(100);
 }
 
 
