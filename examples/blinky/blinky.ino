@@ -4,7 +4,7 @@ Much thanks to knolleary for his PubSubClient, from which much of this example w
 
 
 /*
- * This Tutorial will allow you to sample Digital GPIOs on your ESP8266 and send the values to the IoT Pipe website.  The an introductory tutorial can be found at http://www.iotpipe.io/esp8266
+ * This tutorial allows you to turn an LED on/off from the IoT Pipe website.  The tutorial can be found at http://www.iotpipe.io/esp8266
 */
 
 
