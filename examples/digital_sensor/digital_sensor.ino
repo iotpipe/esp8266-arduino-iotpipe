@@ -23,12 +23,12 @@ const int port = 1883;
 
 
 
-//Wait time between sensor readings.  Note this time is approximate
-const int waitTimeInMilliseconds = 2000; 
+//Wait time between sensor readings.  Note this time is approximate.
+const int waitTimeInMilliseconds = 10000; 
 
 //Digita/ Pin # to be read and the name of the pin
 const int sensorPin = 4;
-const String sensorName="PLACEHOLDER";
+const String sensorName="sensor";
 
 
 
@@ -37,22 +37,20 @@ PubSubClient client(espClient);
 IotPipe iotpipe(deviceId);
 
 
-//This is our initial setup.
-//We connect to Wi-Fi and setup our connection to the IoT Pipe server.
-void setup() {
-  Serial.begin(115200);
-
-  setup_wifi();
-  
-  client.setServer(server, port);
-}
-
-//This function returns a value that is placed in the payload
+//This function reads the value on the pin referenced by sensorPin.
 int getResult()
 {
   return digitalRead(sensorPin);
 }
 
+//This is our initial setup.
+//We connect to Wi-Fi and setup our connection to the IoT Pipe server.
+void setup() 
+{
+	Serial.begin(115200);
+	setup_wifi();
+	client.setServer(server, port);
+}
 
 //This loop runs indefinitely and does the following:
 //Checks if we are connected to IoT Pipe server
@@ -61,30 +59,30 @@ long lastSampleTime = 0;
 
 void loop()
 {
-  if (!client.connected()) {
-    reconnect();
-  }
+	if (!client.connected()) {
+		reconnect();
+	}
 
-  //Once per loop create a payload that contains information about all of your input ports so data can be sent to server.
-  long curTime = millis();
-  if(curTime - lastSampleTime > waitTimeInMilliseconds)
-  {
-    
-    String topic, payload;
-    iotpipe.getSamplingTopic(topic);
-      
-    iotpipe.jsonifyResult( getResult , sensorName, payload);  
-    
-    if(payload.length()>0)
-    {
-      Serial.print("Publishing payload: ");
-      Serial.println(payload);  
-      //client.publish(topic.c_str(),payload.c_str(),payload.length());
-    }
-    lastSampleTime=curTime;
-  }
-  client.loop();
-  delay(100);
+	//Once per loop create a payload that contains information about all of your input ports so data can be sent to server.
+	long curTime = millis();
+	if(curTime - lastSampleTime > waitTimeInMilliseconds)
+	{
+
+		String topic, payload;
+		iotpipe.getSamplingTopic(topic);
+		lastSampleTime=curTime;     
+
+		iotpipe.jsonifyResult( getResult , sensorName, payload);   
+		if(payload.length()>0)
+		{
+			Serial.print("Publishing payload: ");
+			Serial.println(payload);  
+			client.publish(topic.c_str(),payload.c_str(),payload.length());
+		}
+
+	}
+	client.loop();
+	delay(100);
 }
 
 

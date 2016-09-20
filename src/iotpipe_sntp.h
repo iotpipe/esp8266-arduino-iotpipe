@@ -32,7 +32,6 @@ class IotPipe_SNTP
 	private:
 		unsigned long timeWhenSyncedInMillis;
 		unsigned long absTimeInSeconds;
-
 };
 
 

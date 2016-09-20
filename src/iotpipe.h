@@ -57,8 +57,6 @@ void IotPipe::jsonifyResult( T (*f)(), String name, String &buf)
 
 	T value = (*f)();
 	long timeAtReading = millis();
-	Serial.print("Value: ");
-	Serial.println(value);
 	String timestamp;
 
 	if ( timeGetter.isTimeSynced() == false )
@@ -67,14 +65,12 @@ void IotPipe::jsonifyResult( T (*f)(), String name, String &buf)
 	}
 	
 	delay(10);
-	Serial.println("synced");
+
 	if( timeGetter.isTimeSynced() == true )
 	{
 
 		timeGetter.getTimeStamp(timeAtReading, timestamp);
-		Serial.println("exited");
 		delay(10);
-		Serial.println("jsonifying");
 		gpio.jsonifyInputScan(value, timestamp, name, buf); 
 
 	}

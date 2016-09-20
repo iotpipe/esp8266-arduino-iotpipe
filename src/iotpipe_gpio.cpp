@@ -57,9 +57,6 @@ int IotPipe_GPIO::findSensor(String name)
 {
 	for(int i = 0; i < max_sensors; i++)
 	{
-		Serial.print(registeredSensors[i]);
-		Serial.print(" : ");
-		Serial.println(name);
 		if( registeredSensors[i] == name )
 		{
 			return i;
@@ -72,7 +69,6 @@ int IotPipe_GPIO::findSensor(String name)
 //Scans MQTT payload and checks if any OUTPUT port is mentioned
 void IotPipe_GPIO::gpioUpdateOutputs(String msg)
 {
-	Serial.println("updating................");
 	StaticJsonBuffer<200> jsonBuffer;
 	JsonObject& root = jsonBuffer.parseObject(msg);
 
@@ -88,11 +84,9 @@ void IotPipe_GPIO::gpioUpdateOutputs(String msg)
 	int pin;
 	for (JsonObject::iterator it=root.begin(); it!=root.end(); ++it)
 	{
-		Serial.println( String(it->key) );
 		pin = this->findSensor( String(it->key) );
 		if( pin != -1 )
 		{
-			Serial.println("Found pin.");
 			const char* c_val = root[it->key];
 			String value( c_val ); //Service always returns a string as the json value.
 			updateOutput(pin,value);

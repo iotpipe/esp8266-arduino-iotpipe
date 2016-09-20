@@ -39,4 +39,16 @@ namespace IotPipe_Utils
 			i++;
 		}
 	}
+
+	//Pads the given string with zeros to reach the desired length
+	void padStringWithZeros(String &str, int desiredLength)
+	{
+		if( str.length()>=desiredLength )
+			return;
+
+		while( str.length()<desiredLength )
+		{
+			str = "0" + str;
+		}
+	}
 }

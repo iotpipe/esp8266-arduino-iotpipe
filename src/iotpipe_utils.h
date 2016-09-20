@@ -17,7 +17,7 @@ namespace IotPipe_Utils
 
 	//flatten strings with null characters
 	void flatten_string(char *str,int len);
-
+	void padStringWithZeros(String &str, int desiredLength);
 }
 
 

@@ -44,8 +44,6 @@ template <typename T>
 bool IotPipe_GPIO::jsonifyInputScan(T val, String timestamp, String name, String& buf)
 {
 
-	Serial.println("in gpio");
- 
 	StaticJsonBuffer<max_json_payload_length> jsonBuffer;
 	JsonObject& root = jsonBuffer.createObject();
 
@@ -61,11 +59,9 @@ bool IotPipe_GPIO::jsonifyInputScan(T val, String timestamp, String name, String
 		return false;
 	}
 
-	Serial.println("still in gpio");
 
 	root.printTo(buf);
 
-	Serial.println("printing to buffer");
 	return true;
 }
 
