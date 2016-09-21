@@ -37,12 +37,6 @@ PubSubClient client(espClient);
 IotPipe iotpipe(deviceId);
 
 
-//This function reads the value on the pin referenced by sensorPin.
-int getResult()
-{
-  return digitalRead(sensorPin);
-}
-
 //This is our initial setup.
 //We connect to Wi-Fi and setup our connection to the IoT Pipe server.
 void setup() 
@@ -72,7 +66,9 @@ void loop()
 		iotpipe.getSamplingTopic(topic);
 		lastSampleTime=curTime;     
 
-		iotpipe.jsonifyResult( getResult , sensorName, payload);   
+		int val = digitalRead(sensorPin);
+
+		iotpipe.jsonifyResult( val , sensorName, payload);   
 		if(payload.length()>0)
 		{
 			Serial.print("Publishing payload: ");

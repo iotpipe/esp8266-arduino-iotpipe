@@ -18,7 +18,7 @@ class IotPipe
 		//Arguments: Function that returns a sensor value, sensor name, and a buffer to store the JSON
 		//Returns: None
 		template <typename T>
-		void jsonifyResult(  T (*f)(), String name, String &buf);
+		void jsonifyResult(  T val, String name, String &buf);
 
 
 		//Reads a JSON payload from IoT Pipe web service that contains the desired values of output ports. 
@@ -52,10 +52,9 @@ class IotPipe
 
 //Takes a function that returns a float and generates a json payload that can be read by IoT Pipe service
 template <typename T>
-void IotPipe::jsonifyResult( T (*f)(), String name, String &buf)
+void IotPipe::jsonifyResult( T value, String name, String &buf)
 {
 
-	T value = (*f)();
 	long timeAtReading = millis();
 	String timestamp;
 

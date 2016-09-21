@@ -75,7 +75,9 @@ void loop()
 		iotpipe.getSamplingTopic(topic);
 		lastSampleTime=curTime;     
 
-		iotpipe.jsonifyResult( getResult , sensorName, payload);   
+		float val = getResult();
+
+		iotpipe.jsonifyResult( val , sensorName, payload);   
 		if(payload.length()>0)
 		{
 			Serial.print("Publishing payload: ");
