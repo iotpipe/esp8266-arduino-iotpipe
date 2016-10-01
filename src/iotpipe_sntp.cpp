@@ -71,22 +71,6 @@ void IotPipe_SNTP::getTimeStamp(unsigned long timeOfReadingInMillis, String &tim
 	padStringWithZeros(fractionalOffsetString,3);
 
 	timestamp = timestamp + fractionalOffsetString;
-
-	Serial.print("timeWhenSyncedInMillis:   ");
-	Serial.println(this->timeWhenSyncedInMillis);
-
-	Serial.print("timeOfReadingInMillis:   ");
-	Serial.println(timeOfReadingInMillis);
-
-	Serial.print("absTimeInSeconds:   ");
-	Serial.println(this->absTimeInSeconds);
-	
-	Serial.print("Offset:   ");
-	Serial.println(offSet);
-
-	Serial.print("fractionOffsetString:   ");
-	Serial.println(fractionalOffsetString);
-
 }
 
 

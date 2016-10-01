@@ -15,11 +15,16 @@ class IotPipe
 		~IotPipe();
 
 		//Creates a JSON payload of a scan
-		//Arguments: Function that returns a sensor value, sensor name, and a buffer to store the JSON
+		//Arguments: sensor value, sensor name, and a buffer to store the JSON
 		//Returns: None
 		template <typename T>
 		void jsonifyResult(  T val, String name, String &buf);
 
+		//Creates a JSON payload of mulitple measurements.  This is used when multiple measurements have the same timestamp
+		//Arguments: sensor values, sensor names, number of measurements, and a buffer to store the JSON
+		//Returns: None
+		template <typename T>
+		void jsonifyResult( T *values, String *names, int numMeasures, String &buf);
 
 		//Reads a JSON payload from IoT Pipe web service that contains the desired values of output ports. 
 		//Arguments: The JSON payload and topic sent from IoT Pipe web service.
@@ -51,6 +56,7 @@ class IotPipe
 
 
 //Takes a function that returns a float and generates a json payload that can be read by IoT Pipe service
+
 template <typename T>
 void IotPipe::jsonifyResult( T value, String name, String &buf)
 {
@@ -75,14 +81,29 @@ void IotPipe::jsonifyResult( T value, String name, String &buf)
 	}
 }
 
+//takes a variable number of measures and writes to a single timestamp
+template <typename T>
+void IotPipe::jsonifyResult( T *values, String* names, int numMeasures, String &buf)
+{
 
+	long timeAtReading = millis();
+	String timestamp;
 
+	if ( timeGetter.isTimeSynced() == false )
+	{
+		timeGetter.syncToServer();
+	}
+	
+	delay(10);
 
+	if( timeGetter.isTimeSynced() == true )
+	{
 
-
-
-
-
+		timeGetter.getTimeStamp(timeAtReading, timestamp);
+		delay(10);
+		gpio.jsonifyInputScan(values, timestamp, names, numMeasures, buf); 
+	}
+}
 
 #endif
 

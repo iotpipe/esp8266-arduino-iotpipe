@@ -25,6 +25,8 @@ class IotPipe_GPIO
 
 		//updates value field in each node of gpio_head
 		template <typename T> bool jsonifyInputScan(T val, String timestamp, String name, String& buf);
+		template <typename T> bool jsonifyInputScan(T *vals, String timestamp, String *names, int numMeasurements, String& buf);
+
 		void gpioUpdateOutputs(String msg);
 		void registerSensor(int pin, String sensorName);
 
@@ -65,5 +67,29 @@ bool IotPipe_GPIO::jsonifyInputScan(T val, String timestamp, String name, String
 	return true;
 }
 
+template <typename T> 
+bool IotPipe_GPIO::jsonifyInputScan(T *vals, String timestamp, String *names, int numMeasurements, String& buf)
+{
+
+	StaticJsonBuffer<max_json_payload_length> jsonBuffer;
+	JsonObject& root = jsonBuffer.createObject();
+
+	root.set<String>("timestamp", timestamp);
+
+	for(int i = 0; i < numMeasurements; i++)
+		root.set<T>(names[i],vals[i]);
+
+	int len = root.measureLength();
+
+
+ 	//If json response is too large
+	if(len > max_json_payload_length)
+	{
+		return false;
+	}
+
+	root.printTo(buf);
+	return true;
+}
 
 #endif
