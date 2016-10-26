@@ -9,9 +9,8 @@ using namespace IotPipe_Utils;
 class IotPipe
 {
 	public:
-
-		IotPipe(String deviceId);
-		IotPipe(const char* deviceId);
+		IotPipe(String deviceId, void (*)(String)=NULL);
+		IotPipe(const char* deviceId, void (*)(String)=NULL);
 		~IotPipe();
 
 		//Creates a JSON payload of a scan
@@ -26,31 +25,41 @@ class IotPipe
 		template <typename T>
 		void jsonifyResult( T *values, String *names, int numMeasures, String &buf);
 
-		//Reads a JSON payload from IoT Pipe web service that contains the desired values of output ports. 
-		//Arguments: The JSON payload and topic sent from IoT Pipe web service.
-		//Return: None 
-		void updateOutputs(String topic, String msg);
-
-
 		//Adds a sensor to the list of outputs which can receive messages
 		void registerSensor(int pin, String name);
 
 		//Generates the topic to which the device subscribes to receive updates to its output ports
-		//Arguments: String buffer to which output topic is written
+		//Arguments: String buffer to which topic is written
 		//Return: None
 		void getOutputTopic(String &buf) {buf = this->outputTopic;};
 
-
 		//Generates the topic to which the device publishes when sampling input ports
-		//Arguments: String buffer to which sampling topic is written
+		//Arguments: String buffer to which topic is written
 		//Return: None 
 		void getSamplingTopic(String &buf) {buf = this->samplingTopic;}
 
+		//Generates the topic to which the device subscribes so it can send real time data 
+		//Arguments: String buffer to which topic is written
+		//Return: None 
+		void getRealTimeTopic(String &buf) {buf = this->realTimeTopic;}
+
+		//Called inside your MQTT Message Callback to perform IoT Pipe business.
+		//Arguments: the MQTT Topic and Payload
+		//Return: None
+		void messageHandler(String topic, String payload);
+
 	private:
+
 		IotPipe_GPIO gpio;
 		IotPipe_SNTP timeGetter;
 		String samplingTopic;
 		String outputTopic;
+		String realTimeTopic;
+
+		void (*udfMsgRcvd_cb)(String);
+
+		void userDefinedMsg(String msg);
+		void updateOutputs(String topic);
 };
 
 

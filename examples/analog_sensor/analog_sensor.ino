@@ -132,6 +132,8 @@ void reconnect() {
     // Attempt to connect
     if (client.connect("ESP8266Client",mqtt_user,mqtt_pass)) {
       Serial.println("connected");
+      String realTimeTopic;
+      iotpipe.getRealTimeTopic(realTimeTopic);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
